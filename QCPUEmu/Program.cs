@@ -27,20 +27,18 @@ namespace QCPUEmu {
             foreach(string b in File.ReadAllText(args[0]).Split('\n')) {
                 string[] vs = b.Split(' ');
                 Console.WriteLine(b);
-                if(ops.ContainsKey(vs[0])) {
+                if(b.Contains("NOP"))
+                    list.Add((byte)0);
+                else if(ops.ContainsKey(vs[0])) {
                     string bits = ops[vs[0]];
                     if(bits.StartsWith("1")) {
                         if(vs[1].Contains("$"))
                             list.Add((byte)(0b01111000 | byte.Parse(vs[1].Remove(0, 1))));
                         list.Add((byte)((Convert.ToInt32(bits, 2) << 5) | byte.Parse(vs[1].Replace("$", ""))));
-                    } else if(vs[0] == "NOP")
-                        list.Add(0);
-                    else
+                    } else
                         list.Add((byte)((Convert.ToInt32(bits, 2) << 3) | byte.Parse(vs[1].Remove(0, 1))));
-                } else if(vs[0] == "NOP")
-                    list.Add(0);
-                else
-                list.Add(byte.Parse(vs[0]));
+                } else
+                    list.Add(byte.Parse(vs[0]));
             }
             byte[] asm = list.ToArray(typeof(byte)) as byte[];
             string tasm = "";
